@@ -518,13 +518,12 @@ function calculate() {
   let html = '';
   for (let f = 6; f <= 10; f++) {
     const hi = f >= g.feedsMin && f <= g.feedsMax;
-    const medianOz = ((g.ozMin + g.ozMax) / 2 / f).toFixed(1);
     const medianMl = Math.round(((g.mlMin + g.mlMax) / 2 / f) / 10) * 10;
     html += `<tr class="${hi ? 'highlight' : ''}">
       <td>${f} feeds</td>
       <td class="oz-val">${(g.ozMin/f).toFixed(1)}–${(g.ozMax/f).toFixed(1)}</td>
       <td class="ml-val">~${Math.round(g.mlMin/f/10)*10}–${Math.round(g.mlMax/f/10)*10}</td>
-      <td>${medianOz} oz · ~${medianMl} ml</td>
+      <td>~${medianMl}mL</td>
     </tr>`;
   }
   document.getElementById('feedsTableBody').innerHTML = html;
