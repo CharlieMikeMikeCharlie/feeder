@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Baby Feeding Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FDF6EE;
+    --blush: #F4A7A7;
+    --rose: #E07C7C;
+    --sage: #8BB5A0;
+    --sage-light: #C6DDD5;
+    --sage-dark: #5A8A74;
+    --warm-brown: #7A5C4F;
+    --soft-yellow: #F9E4B0;
+    --text: #3D2B24;
+    --text-light: #8C6E65;
+    --card-bg: #FFFAF5;
+    --shadow: rgba(61,43,36,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; right: -120px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(244,167,167,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 16px 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .icon-wrapper {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--blush), var(--rose));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 12px rgba(224,124,124,0.3);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: var(--warm-brown);
+    line-height: 1.2;
+  }
+
+  h1 em { color: var(--rose); font-style: italic; }
+
+  /* Input strip */
+  .input-strip {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 3px 16px var(--shadow);
+    border: 1.5px solid rgba(244,167,167,0.2);
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .input-label-inline {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+
+  input[type="date"] {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1.5px solid rgba(139,181,160,0.4);
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="date"]:focus {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 2px rgba(139,181,160,0.2);
+  }
+
+  .calc-btn {
+    padding: 8px 18px;
+    background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s;
+    box-shadow: 0 3px 10px rgba(90,138,116,0.35);
+    white-space: nowrap;
+  }
+
+  .calc-btn:active { transform: scale(0.97); }
+
+  /* Age badge */
+  .age-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: var(--soft-yellow);
+    border-radius: 10px;
+    padding: 7px 12px;
+    margin-top: 8px;
+    font-weight: 700;
+    color: var(--warm-brown);
+    font-size: 0.8rem;
+    border: 1.5px solid rgba(249,228,176,0.9);
+    line-height: 1.3;
+  }
+  .age-badge.visible { display: flex; }
+
+  /* Error */
+  .error-msg {
+    display: none;
+    background: #fff0f0;
+    border: 1.5px solid rgba(224,124,124,0.3);
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: var(--rose);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+  .error-msg.visible { display: block; }
+
+  /* Cookie note */
+  .cookie-note {
+    display: none;
+    font-size: 0.66rem;
+    color: var(--sage-dark);
+    text-align: right;
+    margin-top: 5px;
+    opacity: 0.8;
+  }
+  .cookie-note.visible { display: block; }
+
+  /* Results */
+  .results { display: none; }
+  .results.visible { display: block; }
+
+  /* Day total */
+  .day-total {
+    background: linear-gradient(135deg, #fff3f3, var(--card-bg));
+    border: 1.5px solid rgba(244,167,167,0.35);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 12px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .day-total-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--rose);
+  }
+
+  .day-total-values { text-align: right; }
+
+  .day-total-oz {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--rose);
+    line-height: 1;
+  }
+
+  .day-total-ml {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-top: 1px;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 5px;
+    padding-left: 2px;
+  }
+
+  /* Feeds table */
+  .feeds-table-wrap {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px var(--shadow);
+    border: 1.5px solid rgba(139,181,160,0.3);
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .feeds-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .feeds-table thead tr {
+    background: linear-gradient(90deg, var(--sage-light), #daeee7);
+  }
+
+  .feeds-table th {
+    padding: 7px 10px;
+    text-align: left;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+  }
+
+  .feeds-table td {
+    padding: 7px 10px;
+    border-top: 1px solid rgba(139,181,160,0.13);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .feeds-table tbody tr.highlight {
+    background: rgba(244,167,167,0.07);
+  }
+
+  .feeds-table tbody tr.highlight td:first-child {
+    font-weight: 800;
+    color: var(--warm-brown);
+  }
+
+  .feeds-table tbody tr.highlight td:first-child::after {
+    content: ' ✓';
+    color: var(--sage-dark);
+    font-size: 0.72rem;
+  }
+
+  .oz-val { color: var(--rose); font-weight: 800; }
+  .ml-val { color: var(--sage-dark); font-weight: 700; }
+
+  /* Tips */
+  .tips-wrap {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow: 0 2px 12px var(--shadow);
+    border: 1.5px solid rgba(139,181,160,0.18);
+    margin-bottom: 10px;
+  }
+
+  .tip-item {
+    display: flex;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(139,181,160,0.22);
+    font-size: 0.78rem;
+    color: var(--text-light);
+    line-height: 1.45;
+  }
+
+  .tip-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .tip-dot {
+    width: 6px; height: 6px;
+    background: var(--sage);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    text-align: center;
+    font-size: 0.66rem;
+    color: var(--text-light);
+    line-height: 1.5;
+    opacity: 0.65;
+    padding: 0 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="icon-wrapper">🍼</div>
+    <h1>Baby <em>Feeding</em> Guide</h1>
+  </header>
+
+  <div class="input-strip">
+    <div class="input-row">
+      <span class="input-label-inline">Birthday</span>
+      <input type="date" id="birthday" max="">
+      <button class="calc-btn" onclick="calculate()">Go</button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="age-badge" id="ageBadge">
+      <span>👶</span>
+      <span id="ageText"></span>
+    </div>
+    <div class="cookie-note" id="cookieNote">📍 Birthday saved on this device</div>
+  </div>
+
+  <div class="results" id="results">
+
+    <div class="day-total">
+      <div class="day-total-label">Per Day Total</div>
+      <div class="day-total-values">
+        <div class="day-total-oz" id="dayOz">—</div>
+        <div class="day-total-ml" id="dayMl">—</div>
+      </div>
+    </div>
+
+    <div class="section-label">🍼 Per feed by feeds/day &nbsp;·&nbsp; ✓ = typical for this age</div>
+    <div class="feeds-table-wrap">
+      <table class="feeds-table">
+        <thead>
+          <tr>
+            <th>Feeds/day</th>
+            <th>oz / feed</th>
+            <th>ml / feed</th>
+          </tr>
+        </thead>
+        <tbody id="feedsTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="section-label">💡 Tips</div>
+    <div class="tips-wrap" id="tipsCard"></div>
+
+  </div>
+
+  <p class="disclaimer">General guidelines — always follow your pediatrician's advice · Covers weeks 1–26</p>
+
+</div>
+<script>
+// Cookie helpers
+function setCookie(name, value, days) {
+  const exp = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${exp};path=/;SameSite=Lax`;
+}
+function getCookie(name) {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+// Week-by-week data
+const weeklyData = [
+  { week:  1, phase:"Rapid ramp-up",           mlMin:300,  mlMax:450,  ozMin:10, ozMax:15, feedsMin:8, feedsMax:12 },
+  { week:  2, phase:"Rapid ramp-up",           mlMin:450,  mlMax:600,  ozMin:15, ozMax:20, feedsMin:8, feedsMax:12 },
+  { week:  3, phase:"Rapid ramp-up",           mlMin:500,  mlMax:750,  ozMin:17, ozMax:25, feedsMin:8, feedsMax:12 },
+  { week:  4, phase:"Rapid ramp-up",           mlMin:600,  mlMax:800,  ozMin:20, ozMax:27, feedsMin:8, feedsMax:10 },
+  { week:  5, phase:"Rapid ramp-up",           mlMin:650,  mlMax:900,  ozMin:22, ozMax:30, feedsMin:8, feedsMax:10 },
+  { week:  6, phase:"Rapid ramp-up",           mlMin:700,  mlMax:950,  ozMin:24, ozMax:32, feedsMin:7, feedsMax:9  },
+  { week:  7, phase:"Transitional increase",   mlMin:750,  mlMax:1000, ozMin:25, ozMax:34, feedsMin:7, feedsMax:9  },
+  { week:  8, phase:"Transitional increase",   mlMin:750,  mlMax:1050, ozMin:25, ozMax:35, feedsMin:6, feedsMax:9  },
+  { week:  9, phase:"Transitional increase",   mlMin:800,  mlMax:1100, ozMin:27, ozMax:37, feedsMin:6, feedsMax:8  },
+  { week: 10, phase:"Transitional increase",   mlMin:800,  mlMax:1150, ozMin:27, ozMax:39, feedsMin:6, feedsMax:8  },
+  { week: 11, phase:"Transitional increase",   mlMin:850,  mlMax:1200, ozMin:29, ozMax:41, feedsMin:6, feedsMax:8  },
+  { week: 12, phase:"Plateau begins",          mlMin:850,  mlMax:1200, ozMin:29, ozMax:41, feedsMin:5, feedsMax:8  },
+  { week: 13, phase:"Plateau",                 mlMin:850,  mlMax:1200, ozMin:29, ozMax:41, feedsMin:5, feedsMax:7  },
+  { week: 14, phase:"Plateau",                 mlMin:850,  mlMax:1200, ozMin:29, ozMax:41, feedsMin:5, feedsMax:7  },
+  { week: 15, phase:"Plateau",                 mlMin:850,  mlMax:1200, ozMin:29, ozMax:41, feedsMin:5, feedsMax:7  },
+  { week: 16, phase:"Plateau",                 mlMin:800,  mlMax:1150, ozMin:27, ozMax:39, feedsMin:5, feedsMax:7  },
+  { week: 17, phase:"Plateau",                 mlMin:800,  mlMax:1150, ozMin:27, ozMax:39, feedsMin:5, feedsMax:7  },
+  { week: 18, phase:"Plateau",                 mlMin:800,  mlMax:1100, ozMin:27, ozMax:37, feedsMin:5, feedsMax:7  },
+  { week: 19, phase:"Plateau",                 mlMin:750,  mlMax:1100, ozMin:25, ozMax:37, feedsMin:5, feedsMax:7  },
+  { week: 20, phase:"Plateau",                 mlMin:750,  mlMax:1050, ozMin:25, ozMax:35, feedsMin:5, feedsMax:6  },
+  { week: 21, phase:"Plateau",                 mlMin:700,  mlMax:1050, ozMin:24, ozMax:35, feedsMin:5, feedsMax:6  },
+  { week: 22, phase:"Plateau",                 mlMin:700,  mlMax:1000, ozMin:24, ozMax:34, feedsMin:5, feedsMax:6  },
+  { week: 23, phase:"Plateau",                 mlMin:700,  mlMax:1000, ozMin:24, ozMax:34, feedsMin:5, feedsMax:6  },
+  { week: 24, phase:"Plateau",                 mlMin:700,  mlMax:1000, ozMin:24, ozMax:34, feedsMin:5, feedsMax:6  },
+  { week: 25, phase:"Early solids transition", mlMin:650,  mlMax:950,  ozMin:22, ozMax:32, feedsMin:4, feedsMax:6  },
+  { week: 26, phase:"Early solids transition", mlMin:650,  mlMax:900,  ozMin:22, ozMax:30, feedsMin:4, feedsMax:6  },
+];
+
+const phaseTips = {
+  "Rapid ramp-up": [
+    "Amounts grow quickly week over week — totally normal.",
+    "Feed every 2–3 hrs including overnight; crying is a late hunger cue.",
+    "6+ wet diapers/day after day 6 means baby is getting enough.",
+    "Most babies regain birth weight by ~2 weeks.",
+  ],
+  "Transitional increase": [
+    "Daily totals are still climbing as your baby's stomach grows.",
+    "Feeds may start spacing out to every 3–4 hours.",
+    "Growth spurt around 3 months — expect extra hunger.",
+    "Some babies drop a night feed now; many still wake to eat.",
+  ],
+  "Plateau begins": [
+    "Daily intake is leveling off — a healthy, expected shift.",
+    "Feeds are more efficient; sessions may feel shorter.",
+    "Longer stretches between feeds are common now.",
+    "No solids yet — milk or formula is all they need.",
+  ],
+  "Plateau": [
+    "Intake is stable — consistent amounts are expected.",
+    "Feed on demand and watch for hunger and fullness cues.",
+    "Longer sleep stretches may naturally reduce night feeds.",
+    "Ask your pediatrician about readiness signs for solids.",
+  ],
+  "Early solids transition": [
+    "Milk/formula is still the primary nutrition source.",
+    "Introduce puréed foods one at a time, 3–5 days apart.",
+    "Readiness signs: sits with support, shows interest in food.",
+    "Milk intake may dip slightly as solid intake increases.",
+  ],
+};
+
+function getDays(birthday) {
+  const birth = new Date(birthday), today = new Date();
+  [birth, today].forEach(d => d.setHours(0,0,0,0));
+  return Math.floor((today - birth) / 864e5);
+}
+
+function formatAge(days) {
+  if (days < 7) return `${days}d old`;
+  const w = Math.floor(days / 7), d = days % 7;
+  if (days < 30) return d ? `${w}w ${d}d old` : `${w}w old`;
+  const m = Math.floor(days / 30.44), rw = Math.floor((days % 30.44) / 7);
+  return rw ? `${m}m ${rw}w old` : `${m}m old`;
+}
+
+function calculate() {
+  const val        = document.getElementById('birthday').value;
+  const errorMsg   = document.getElementById('errorMsg');
+  const results    = document.getElementById('results');
+  const ageBadge   = document.getElementById('ageBadge');
+  const cookieNote = document.getElementById('cookieNote');
+
+  errorMsg.classList.remove('visible');
+  results.classList.remove('visible');
+  ageBadge.classList.remove('visible');
+
+  if (!val) {
+    errorMsg.textContent = 'Please enter a birthday.';
+    errorMsg.classList.add('visible');
+    return;
+  }
+
+  const days = getDays(val);
+
+  if (days < 0) {
+    errorMsg.textContent = "Birthday can't be in the future.";
+    errorMsg.classList.add('visible');
+    return;
+  }
+  if (days > 26 * 7) {
+    errorMsg.textContent = 'Guide covers weeks 1–26. See your pediatrician for older babies.';
+    errorMsg.classList.add('visible');
+    return;
+  }
+
+  // Persist to cookie for 1 year
+  setCookie('babyBirthday', val, 365);
+  cookieNote.classList.add('visible');
+
+  const ageWeeks = Math.max(1, Math.ceil(days / 7));
+  const g = weeklyData.find(x => x.week === Math.min(ageWeeks, 26));
+
+  document.getElementById('ageText').textContent =
+    `${formatAge(days)} · Wk ${g.week} · ${g.phase}`;
+  ageBadge.classList.add('visible');
+
+  document.getElementById('dayOz').textContent = `${g.ozMin}–${g.ozMax} oz`;
+  document.getElementById('dayMl').textContent  = `${g.mlMin}–${g.mlMax} ml`;
+
+  let html = '';
+  for (let f = 6; f <= 10; f++) {
+    const hi = f >= g.feedsMin && f <= g.feedsMax;
+    html += `<tr class="${hi ? 'highlight' : ''}">
+      <td>${f} feeds</td>
+      <td class="oz-val">${(g.ozMin/f).toFixed(1)}–${(g.ozMax/f).toFixed(1)}</td>
+      <td class="ml-val">~${Math.round(g.mlMin/f/10)*10}–${Math.round(g.mlMax/f/10)*10}</td>
+    </tr>`;
+  }
+  document.getElementById('feedsTableBody').innerHTML = html;
+
+  const tips = phaseTips[g.phase] || phaseTips["Plateau"];
+  document.getElementById('tipsCard').innerHTML = tips.map(t =>
+    `<div class="tip-item"><div class="tip-dot"></div><span>${t}</span></div>`
+  ).join('');
+
+  results.classList.add('visible');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('birthday');
+  input.max = new Date().toISOString().split('T')[0];
+
+  const saved = getCookie('babyBirthday');
+  if (saved) {
+    input.value = saved;
+    calculate(); // auto-run with saved date
+  }
+
+  input.addEventListener('change', calculate);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+});
+</script>
+</body>
+</html>
